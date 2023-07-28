@@ -1,0 +1,26 @@
+{
+  "name": "electron-rsc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "waku build --config ./vite.config.mts"
+  },
+  "keywords": [],
+  "author": "Tom Sherman",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^18.2.17",
+    "@types/react-dom": "^18.2.7",
+    "electron": "^25.3.2",
+    "prettier": "^2.8.4",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "react": "18.3.0-canary-7118f5dd7-20230705",
+    "react-dom": "18.3.0-canary-7118f5dd7-20230705",
+    "react-server-dom-webpack": "18.3.0-canary-7118f5dd7-20230705",
+    "waku": "^0.13.0"
+  }
+}

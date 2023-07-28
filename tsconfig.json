@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "allowJs": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "module": "nodenext",
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "jsx": "react-jsx"
+  }
+}
