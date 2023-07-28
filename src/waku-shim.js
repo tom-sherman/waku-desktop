@@ -2,12 +2,13 @@
 import { rsc } from "waku";
 import { PassThrough, Readable } from "node:stream";
 
+const middleware = rsc({ command: "start" });
+
 /**
  *
  * @param {Request} request
  */
 export async function handleWakuRequest(request) {
-  const middleware = rsc({ command: "start" });
   const req = createWakuRequest(request);
   const passThrough = new PassThrough();
   const headers = new Headers();
