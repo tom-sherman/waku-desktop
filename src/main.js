@@ -2,24 +2,8 @@ const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
 
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: "waku",
-    privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      bypassCSP: true,
-    },
-  },
-]);
-
 Promise.all([import("./waku-shim.mjs"), app.whenReady()]).then(
   ([{ handleWakuRequest }]) => {
-    protocol.handle("waku", (req) => {
-      return handleWakuRequest(req);
-    });
-
     protocol.handle("file", async (req) => {
       const url = new URL(req.url);
       if (url.pathname.startsWith("/RSC")) {
