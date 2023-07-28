@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { rsc } from "waku";
 import { PassThrough, Readable } from "node:stream";
 
