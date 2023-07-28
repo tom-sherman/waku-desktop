@@ -2,9 +2,19 @@ const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
 
+function isDev() {
+  return process.argv[2] == "--dev";
+}
+
 Promise.all([import("./waku-shim.js"), app.whenReady()]).then(
-  ([{ handleWakuRequest }]) => {
+  ([{ createRequestHandler }]) => {
+    const handleWakuRequest = createRequestHandler(isDev() ? "dev" : "start");
+
     protocol.handle("file", async (req) => {
+      if (isDev()) {
+        return handleWakuRequest(req);
+      }
+
       const url = new URL(req.url);
       if (url.pathname.startsWith("/RSC")) {
         return handleWakuRequest(req);
@@ -47,6 +57,10 @@ function createWindow() {
     },
   });
 
-  win.loadFile(path.join(__dirname, "../dist/public/index.html"));
+  if (isDev()) {
+    win.loadURL("file:/");
+  } else {
+    win.loadFile(path.join(__dirname, "../dist/public/index.html"));
+  }
   win.webContents.openDevTools();
 }
