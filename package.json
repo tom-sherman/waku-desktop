@@ -5,6 +5,7 @@
   "main": "src/main.cjs",
   "type": "module",
   "scripts": {
+    "dev": "electron . --dev",
     "start": "electron .",
     "build": "waku build --config ./vite.config.mts"
   },

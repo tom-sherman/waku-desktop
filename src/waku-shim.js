@@ -1,30 +1,53 @@
 // @ts-nocheck
-import { rsc } from "waku";
+import { rsc, devServer } from "waku";
 import { PassThrough, Readable } from "node:stream";
-
-const middleware = rsc({ command: "start" });
 
 /**
  *
- * @param {Request} request
+ * @param {"start" | "dev"} command
  */
-export async function handleWakuRequest(request) {
-  const req = createWakuRequest(request);
-  const passThrough = new PassThrough();
-  const headers = new Headers();
-  passThrough.setHeader = (name, value) => {
-    headers.set(name, value);
-  };
-  await middleware(req, passThrough, () => {});
+export function createRequestHandler(command) {
+  const rscMiddleware = rsc({ command });
 
-  return new Response(passThrough, {
-    status: passThrough?.statusCode,
-    headers,
-  });
+  if (command === "dev") {
+    const devServerMiddleware = devServer();
+
+    /**
+     * @param {Request} request
+     */
+    return async function handleWakuDevRequest(request) {
+      const req = createWakuRequest(request);
+      const res = createWakuResponse();
+      let p2;
+      let p1 = rscMiddleware(req, res, () => {
+        p2 = devServerMiddleware(req, res, () => {});
+      });
+
+      await Promise.all([p1, p2]);
+
+      return new Response(res, {
+        status: res?.statusCode,
+        headers: res?.headers,
+      });
+    };
+  }
+
+  /**
+   * @param {Request} request
+   */
+  return async function handleWakuProdRequest(request) {
+    const req = createWakuRequest(request);
+    const res = createWakuResponse();
+    await rscMiddleware(req, res, () => {});
+
+    return new Response(res, {
+      status: res?.statusCode,
+      headers: res?.headers,
+    });
+  };
 }
 
 /**
- *
  * @param {Request} request
  */
 function createWakuRequest(request) {
@@ -41,4 +64,15 @@ function createWakuRequest(request) {
     pipe: bodyStream.pipe.bind(bodyStream),
     [Symbol.asyncIterator]: bodyStream[Symbol.asyncIterator].bind(bodyStream),
   };
+}
+
+function createWakuResponse() {
+  const headers = new Headers();
+  const passThrough = new PassThrough();
+  passThrough.setHeader = (name, value) => {
+    headers.set(name, value);
+  };
+  passThrough.headers = headers;
+
+  return passThrough;
 }
