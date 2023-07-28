@@ -2,7 +2,7 @@ const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
 
-Promise.all([import("./waku-shim.mjs"), app.whenReady()]).then(
+Promise.all([import("./waku-shim.js"), app.whenReady()]).then(
   ([{ handleWakuRequest }]) => {
     protocol.handle("file", async (req) => {
       const url = new URL(req.url);
